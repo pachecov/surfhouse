@@ -1,0 +1,21 @@
+.mfp-bg {
+    background-color: #c00001;
+}
+.mfp-container {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.mfp-close {
+    font-size: 60px;
+    opacity: 1;
+    outline: none;
+    &:active,
+    &:focus,
+    &:hover {
+        background-color: transparent;
+        outline: none;
+    }
+}
+.mfp-iframe-holder .mfp-close {
+    top: -50px;
+}

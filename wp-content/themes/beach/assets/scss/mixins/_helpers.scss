@@ -1,0 +1,483 @@
+// --------------------------------------------------
+// contexts
+@mixin when-inside($selector) {
+    #{$selector} & {
+        @content;
+    }
+}
+
+// --------------------------------------------------
+// aspect ratio
+// e.g. @include aspect-ratio(16,9);
+// expects child to have class of `.content` (could be changed to a wildcard `*`)
+@mixin aspect-ratio($width, $height) {
+    position: relative;
+
+    &::before {
+        content: '';
+        display: block;
+        padding-top: $height / $width * 100%;
+        width: 100%;
+    }
+
+    >.content {
+        bottom: 0;
+        left: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+}
+
+//How to use: @include css3-prefix(transform, scale3d(2.5, 2, 1.5));
+@mixin css3-prefix($prop, $value) {
+    -webkit-#{$prop}: #{$value};
+    -moz-#{$prop}: #{$value};
+    -ms-#{$prop}: #{$value};
+    -o-#{$prop}: #{$value};
+    #{$prop}: #{$value};
+}
+
+//How to use: @include vertical-center();
+@mixin vertical-center {
+    position: relative;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+//How to use: 
+// @include keyframes(background) {
+//    0% {
+//     background: white;
+//   }
+//   50% {
+//     background: lightblue;
+//   }
+//   100% {
+//     background: royalblue;
+//   } 
+// }
+@mixin keyframes($name) {
+    @-webkit-keyframes #{$name} {
+        @content;
+    }
+
+    @-moz-keyframes #{$name} {
+        @content;
+    }
+
+    @keyframes #{$name} {
+        @content;
+    }
+}
+
+@mixin animation-fade($name) {
+    @include keyframes($name) {
+        0% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.4;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+}
+
+//How to use:  @include abs-position(100px, 100px, auto, auto);
+@mixin abs-position($top, $right, $bottom, $left) {
+    position: absolute;
+    top: $top;
+    right: $right;
+    bottom: $bottom;
+    left: $left;
+}
+
+//How to use:  @include clearfix;
+@mixin clearfix {
+    &:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+}
+
+//How to use:  @include opacity(.4);
+@mixin opacity($opacity) {
+    opacity: $opacity;
+
+    $opacity-ie: $opacity * 100;
+
+    filter: alpha(opacity=$opacity-ie); //IE8
+}
+
+//How to use:  body {@include font-size(16);}
+@mixin font-size($size, $base: 16) {
+    font-size: $size; // fallback for old browsers
+    font-size: $size / $base * 1rem;
+}
+
+//How to use:   @include gradient(#07c, #06f, vertical);
+@mixin gradient($start-color, $end-color, $orientation) {
+    background: $start-color;
+
+    @if $orientation=="vertical" {
+        background: -webkit-linear-gradient(top, $start-color, $end-color);
+        background: linear-gradient(to bottom, $start-color, $end-color);
+    }
+
+    @else if $orientation=="horizontal" {
+        background: -webkit-linear-gradient(left, $start-color, $end-color);
+        background: linear-gradient(to right, $start-color, $end-color);
+    }
+
+    @else {
+        background: -webkit-radial-gradient(center, ellipse cover, $start-color, $end-color);
+        background: radial-gradient(ellipse at center, $start-color, $end-color);
+    }
+}
+
+// How to use   @include roundedCorners(10);
+@mixin roundedCorners($size) {
+    -webkit-border-radius: $size + px;
+    -moz-border-radius: $size + px;
+    border-radius: $size + px;
+}
+
+@mixin flexbox {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+@mixin inline-flex {
+    display: -webkit-inline-box;
+    display: -moz-inline-box;
+    display: -webkit-inline-flex;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+}
+
+@mixin justify-content($value: flex-start) {
+    @if $value==flex-start {
+        -webkit-box-pack: start;
+        -moz-box-pack: start;
+        -ms-flex-pack: start;
+    }
+
+    @else if $value==flex-end {
+        -webkit-box-pack: end;
+        -moz-box-pack: end;
+        -ms-flex-pack: end;
+    }
+
+    @else if $value==space-between {
+        -webkit-box-pack: justify;
+        -moz-box-pack: justify;
+        -ms-flex-pack: justify;
+    }
+
+    @else if $value==space-around {
+        -ms-flex-pack: distribute;
+    }
+
+    @else {
+        -webkit-box-pack: $value;
+        -moz-box-pack: $value;
+        -ms-flex-pack: $value;
+    }
+
+    -webkit-justify-content: $value;
+    justify-content: $value;
+}
+
+@mixin align-items($value: stretch) {
+    @if $value==flex-start {
+        -webkit-box-align: start;
+        -moz-box-align: start;
+        -ms-flex-align: start;
+    }
+
+    @else if $value==flex-end {
+        -webkit-box-align: end;
+        -moz-box-align: end;
+        -ms-flex-align: end;
+    }
+
+    @else {
+        -webkit-box-align: $value;
+        -moz-box-align: $value;
+        -ms-flex-align: $value;
+    }
+
+    -webkit-align-items: $value;
+    align-items: $value;
+}
+
+//How to use:   @include flexcen(space-between, left);
+@mixin flexcen($justify: center, $align: center) {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: $align;
+    -ms-flex-align: $align;
+    align-items: $align;
+    -webkit-box-pack: $justify;
+    -ms-flex-pack: $justify;
+    justify-content: $justify;
+}
+
+@mixin inline-flexcen($justify: center, $align: center) {
+    display: -webkit-inline-box;
+    display: -moz-inline-box;
+    display: -webkit-inline-flex;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    -webkit-box-align: $align;
+    -ms-flex-align: $align;
+    align-items: $align;
+    -webkit-box-pack: $justify;
+    -ms-flex-pack: $justify;
+    justify-content: $justify;
+}
+
+//How to use @include fonts("san-serif", medium, black, normal, normal)
+@mixin fonts($font-family: "", $font-size: "", $font-color: "", $font-weight: "", $font-style: "") {
+    @if $font-family !="" {
+        font-family: $font-family;
+    }
+
+    @if $font-size !="" {
+        font-size: $font-size;
+    }
+
+    @if $font-color !="" {
+        color: $font-color;
+    }
+
+    @if $font-weight !="" {
+        font-weight: $font-weight;
+    }
+
+    @if $font-style !="" {
+        font-style: $font-style;
+    }
+}
+
+//How to use:   @include  font-responsive(26)
+// font-size: calc(16px + (26 - 16) * ((100vw - 300px) / (1600 - 300))) ;
+@mixin font-responsive($f-max, $f-min: $font-size-min, $w-max: $width-screen-max, $w-min: $width-screen-min) {
+    $f-min-px: $f-min + px;
+    $w-max-px: $w-max + px;
+    $w-min-px: $w-min + px;
+    $font-size: $f-max + px;
+
+    font-size: $font-size;
+
+    @if $w-max==$width-screen-max and $w-min==$width-screen-min {
+        @media (max-width: #{$w-max-px}) {
+            & {
+                font-size: calc(#{$f-min-px} + (#{$f-max} - #{$f-min}) * ((100vw - #{$w-min-px}) / (#{$w-max} - #{$w-min})));
+            }
+        }
+
+        @media (max-width: #{$w-min-px}) {
+            & {
+                font-size: #{$f-min-px};
+            }
+        }
+    }
+
+    @else {
+        font-size: calc(#{$f-min-px} + (#{$f-max} - #{$f-min}) * ((100vw - #{$w-min-px}) / (#{$w-max} - #{$w-min})));
+    }
+}
+
+//How to use @include bg-image("logo.png", center, no-repeat, cover)
+@mixin bg-image($bg-image: "", $bg-position: "", $bg-repeat: "", $bg-size: "") {
+    @if $bg-image !="" {
+        $bg-image: "../../images/"+ $bg-image;
+
+        background-image: url($bg-image);
+    }
+
+    @if $bg-position=="" {
+        $bg-position: center center;
+    }
+
+    @if $bg-repeat=="" {
+        $bg-repeat: no-repeat;
+    }
+
+    @if $bg-size=="" {
+        $bg-size: cover;
+    }
+
+    background-position: $bg-position;
+    background-repeat: $bg-repeat;
+    background-size: $bg-size;
+}
+
+//How to use:   @include flexcen(space-between, left);
+@mixin abscen($left: "", $top: "", $base-center: 50%) {
+    position: absolute;
+
+    @if $left==""and $top=="" {
+        top: $base-center;
+        left: $base-center;
+        -webkit-transform: translate(-$base-center, -$base-center);
+        -ms-transform: translate(-$base-center, -$base-center);
+        transform: translate(-$base-center, -$base-center);
+    }
+
+    @else if $left=="left"and $top=="" {
+        top: $base-center;
+        left: 0;
+        -webkit-transform: translateY(-$base-center);
+        -ms-transform: translateY(-$base-center);
+        transform: translateY(-$base-center);
+    }
+
+    @else if $left=="right"and $top=="" {
+        top: $base-center;
+        right: 0;
+        -webkit-transform: translateY(-$base-center);
+        -ms-transform: translateY(-$base-center);
+        transform: translateY(-$base-center);
+    }
+
+    @else if $left=="top"and $top=="" {
+        left: $base-center;
+        top: 0;
+        -webkit-transform: translateX(-$base-center);
+        -ms-transform: translateX(-$base-center);
+        transform: translateX(-$base-center);
+    }
+
+    @else if $left=="bottom"and $top=="" {
+        left: $base-center;
+        bottom: 0;
+        -webkit-transform: translateX(-$base-center);
+        -ms-transform: translateX(-$base-center);
+        transform: translateX(-$base-center);
+    }
+
+    @else if $left !=""and $top=="" {
+        top: $base-center;
+        left: $left;
+        -webkit-transform: translateY(-$base-center);
+        -ms-transform: translateY(-$base-center);
+        transform: translateY(-$base-center);
+    }
+
+    @else if $left==""and $top !="" {
+        top: $top;
+        left: $base-center;
+        -webkit-transform: translateX(-$base-center);
+        -ms-transform: translateX(-$base-center);
+        transform: translateX(-$base-center);
+    }
+
+    @else {
+        top: $top;
+        left: $left;
+    }
+}
+
+//How to use: @include min-w-h(155, 50)
+@mixin min-w-h($min-width: "", $min-height: "") {
+    @if $min-width !="" {
+        min-width: $min-width + px;
+    }
+
+    @if $min-height !="" {
+        min-height: $min-height + px;
+    }
+}
+
+//How to use: @include color-weight(red, bold)
+@mixin color-weight($color: "", $weight: "") {
+    @if $color !="" {
+        color: $color;
+    }
+
+    @if $weight !="" {
+        font-weight: $weight;
+    }
+}
+
+//How to use:  padding: responsive(100, 48, 1440, 375);
+@function responsive($max, $min: "", $w-max: $width-screen-max, $w-min: $width-screen-min) {
+    @if $min==""or $max==$min {
+        @return $max+px;
+    }
+
+    $min-px: $min+px;
+    $w-min-px: $w-min+px;
+
+    $result: calc(#{$min-px} + (#{$max} - #{$min}) * ((100vw - #{$w-min-px}) / (#{$w-max} - #{$w-min})));
+
+    @return $result;
+}
+
+//How to use:   @include  responsive(font-size, 60, 39, 1440, 600)
+@mixin responsive($attr: "", $size-max: "", $size-min: $font-size-min, $w-max: $width-screen-max, $w-min: $width-screen-min) {
+    $size-max-px: $size-max + px;
+    $size-min-px: $size-min + px;
+    $w-max-px: $w-max + px;
+    $w-min-px: $w-min + px;
+    $desktop-px: $width-screen-max * 1px;
+    $phone-px: $width-screen-min * 1px;
+
+    $responsive-calc: calc(#{$size-min-px} + (#{$size-max} - #{$size-min}) * ((100vw - #{$w-min-px}) / (#{$w-max} - #{$w-min})));
+
+    $property-map: (fz: font-size, lh: line-height, my: margin, p: padding, ty: top, l: left, b: bottom, r: right, w: width, h: height, mt: margin-top, mr: margin-right, mb: margin-bottom, ml: margin-left, pt: padding-top, pry: padding-right, pb: padding-bottom, pl: padding-left, mw: min-height, maxw: min-height, mh: min-height, minh: min-height, mnw: min-width, minw: min-width, mxh: max-height, maxh: max-height);
+
+    $property: "";
+
+    @if map-has-key($property-map, $attr) {
+        $property: map-get($property-map, $attr);
+    }
+
+    @else {
+        $property: $attr;
+    }
+
+    #{$property}: $size-max-px;
+
+    @media (max-width: #{$w-max-px}) {
+        #{$property}: $responsive-calc;
+    }
+
+    @media (max-width: #{$w-min-px}) {
+        #{$property}: #{$size-min-px};
+    }
+}
+
+// buttons
+@mixin effect-solid($width, $height, $color){
+    &::after {
+        position: absolute;
+        content: "";
+        border-radius: 5px;
+        top: -2px;
+        left: -2px;
+        right: 0px;
+        bottom: 0;
+        width: 0;
+        height: $height;
+        background-color: $color;
+        transition: all 0.35s;
+        z-index: -1;
+      }
+      &:hover::after{
+        width: $width;
+      }
+}

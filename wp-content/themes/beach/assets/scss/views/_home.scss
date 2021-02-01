@@ -1,0 +1,9 @@
+.home--hero{
+    &__slider{
+        .home--slide{
+            // min-height: 700px;
+            min-height: 500px;
+            background-image: url('../../images/sulf1.jpg');
+        }
+    }
+}
